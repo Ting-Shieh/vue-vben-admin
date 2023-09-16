@@ -32,5 +32,6 @@ export default defineApplicationConfig({
         },
       },
     },
+    // mode: process.env.NODE_ENV
   },
 });

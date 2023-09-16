@@ -16,7 +16,7 @@ interface DefineOptions {
 }
 
 function defineApplicationConfig(defineOptions: DefineOptions = {}) {
-  const { overrides = {} } = defineOptions;
+  const { overrides = { } } = defineOptions;
 
   return defineConfig(async ({ command, mode }) => {
     const root = process.cwd();

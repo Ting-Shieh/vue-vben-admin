@@ -7,6 +7,7 @@ const commonConfig: (mode: string) => UserConfig = (mode) => ({
     host: true,
   },
   esbuild: {
+    // 生產環境不能使用console.log
     drop: mode === 'production' ? ['console', 'debugger'] : [],
   },
   build: {

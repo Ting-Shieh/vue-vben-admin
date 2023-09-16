@@ -119,9 +119,10 @@
   const rememberMe = ref(false);
 
   const formData = reactive({
-    account: 'vben',
+    account: 'test', // 'vben',
     password: '123456',
   });
+  console.log('!!!!')
 
   const { validForm } = useFormValid(formRef);
 
@@ -142,7 +143,8 @@
       if (userInfo) {
         notification.success({
           message: t('sys.login.loginSuccessTitle'),
-          description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.realName}`,
+          description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.nickname}`,
+          // description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.realName}`,
           duration: 3,
         });
       }
