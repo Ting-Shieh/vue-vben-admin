@@ -17,6 +17,15 @@ const permission: AppRouteModule = {
 
   children: [
     {
+      path: 'menu',
+      name: 'PermissionMenu',
+      component: import('@/views/permission/menu/index.vue'),
+      meta: {
+        title: t('routes.demo.permission.menu'),
+        ignoreKeepAlive: true,
+      },
+    },
+    {
       path: 'front',
       name: 'PermissionFrontDemo',
       component: getParentLayout('PermissionFrontDemo'),

@@ -18,7 +18,7 @@ import { ERROR_LOG_ROUTE, PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
 
 import { filter } from '/@/utils/helper/treeHelper';
 
-import { getMenuList } from '/@/api/sys/menu';
+import { getActiveMenu, getMenuList } from '/@/api/sys/menu';
 import { getPermCode } from '/@/api/sys/user';
 
 import { useMessage } from '/@/hooks/web/useMessage';
@@ -174,30 +174,67 @@ export const usePermissionStore = defineStore({
           if (route.children && route.children.length) {
             route.children = wrapperRouteComponent(route.children);
           }
-          route.component = ROUTE_MAP[route.name] || ROUTE_MAP.NOT_FOUND;
+          route.component = ROUTE_MAP[route.name] || ROUTE_MAP.PAGE_NOT_FOUND_NAME// ROUTE_MAP.NOT_FOUND;
           return route
         });
       }
       const parseRouteRoles = (routes: AppRouteRecordRaw[]): AppRouteRecordRaw[] => {
         return routes.map((route) => {
+          console.log('route.meta.roles:', route.meta.roles)
+
           if (route.children && route.children.length) {
             route.children = parseRouteRoles(route.children);
           }
-          // if (route?.meta?.roles) {
-          //   try {
-          //     route.meta.roles = route.meta.roles.split(',');
-          //   } catch (e) {}
-          // }
+          if (route?.meta?.roles) {
+            try {
+              route.meta.roles = JSON.parse(route.meta.roles);
+            } catch (e) {}
+          }
           return route
         });
       }
+      const addPageNotFoundAtFirst = (routes) => {
+        routes.unshift(PAGE_NOT_FOUND_ROUTE);
+        return routes;
+      };
+      const convertMenuTree = (menuList) => {
+        const menus = [];
+        menuList.forEach((menu) => {
+          if (menu.meta) {
+            try {
+              menu.meta = JSON.parse(menu.meta);
+            } catch (e) {
+              console.error(e);
+            }
+          }
+          if (menu.pid === 0) {
+            menus.push(menu);
+          } else {
+            const parentMenu = menuList.find(m => m.id === menu.pid);
+            if (!parentMenu.children) {
+              parentMenu.children = [];
+            }
+            parentMenu.children.push(menu);
+          }
+        });
+        return menus;
+      };
+      const getAllMenuData = () => {
+        return getActiveMenu().then((menu) => {
+          // console.log(menu);
+          return convertMenuTree(menu);
+        });
+      };
       let backendRouteList: AppRouteRecordRaw[] = [];
       try {
-        backendRouteList = asyncRoutes;
+        backendRouteList = await getAllMenuData(); //asyncRoutes;
         backendRouteList = wrapperRouteComponent(backendRouteList);
         backendRouteList = parseRouteRoles(backendRouteList);
+        backendRouteList = addPageNotFoundAtFirst(backendRouteList);
       } catch (e) {}
 
+      // // test
+      // backendRouteList = asyncRoutes;
       switch (permissionMode) {
         // 角色权限
         case PermissionModeEnum.ROLE:
