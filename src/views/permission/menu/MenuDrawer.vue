@@ -108,7 +108,7 @@
               await createMenu({ data: values });
               createMessage.success('創建菜單成功！')
             } catch(e) {
-              console.error('創建菜單失敗！')
+              console.error('創建菜單失敗！！')
             }
           }
           closeDrawer();
